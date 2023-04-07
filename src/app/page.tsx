@@ -7,6 +7,7 @@ import { Button, Grid, IconButton, Tooltip } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import CustomTextField from "./design/components/CustomTextField";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { saveTaskApi } from "./api/saveTask/route";
 
 const deleteStyle = { marginLeft: "-40px" };
 const btnStyle = { height: "40px", minWidht: "120px", margin: "16px" };
@@ -16,10 +17,22 @@ export default function Home() {
     setTasks([...tasks, { id: uuidv4(), text: "", showDelete: false }]);
   };
   const onTextChange = (taskId: string, newText: string) => {
-    tasks.map((task) => {
+    tasks.map(async (task) => {
       if (task.id == taskId) {
         task.text = newText;
-        console.log(tasks);
+        try {
+          const response = await fetch(saveTaskApi, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(task),
+          });
+          const data = await response.json();
+          console.log(data);
+        } catch (err) {
+          console.log(err);
+        }
       }
     });
   };
@@ -40,7 +53,6 @@ export default function Home() {
       if (task.id == id) {
         let taskIndex = tasks.indexOf(task);
         tasks[taskIndex].showDelete = show;
-        console.log(tasks);
         setTasks([...tasks]);
       }
     });
