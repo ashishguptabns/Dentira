@@ -1,102 +1,69 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import styles from "./page.module.css";
+import { useState } from "react";
+import { Task } from "./model/domain/Task";
+import { Button, Grid, IconButton, Tooltip } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
+import CustomTextField from "./design/components/CustomTextField";
+import DeleteIcon from "@mui/icons-material/Delete";
 
+const deleteStyle = { marginLeft: "-40px" };
+const btnStyle = { height: "40px", minWidht: "120px", margin: "16px" };
 export default function Home() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const handleAddQuery = () => {
+    setTasks([...tasks, { id: uuidv4(), text: "" }]);
+  };
+  const onTextChange = (taskId: string, newText: string) => {
+    tasks.map((task) => {
+      if (task.id == taskId) {
+        task.text = newText;
+        console.log(tasks);
+      }
+    });
+  };
+  const handleDelete = (id: string) => {
+    tasks.map((task) => {
+      if (task.id == id) {
+        let taskIndex = tasks.indexOf(task);
+        tasks.splice(taskIndex, 1);
+        console.log(tasks);
+        setTasks([...tasks]);
+      }
+    });
+  };
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <div className={styles.container}>
+      <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        {tasks.map((task) => {
+          return (
+            <div key={task.id}>
+              <CustomTextField
+                text={task.text}
+                onTextChange={(newText: string) => {
+                  onTextChange(task.id, newText);
+                }}
+              />
+              <Tooltip
+                title="Delete"
+                style={deleteStyle}
+                onClick={() => {
+                  handleDelete(task.id);
+                }}
+              >
+                <IconButton>
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+          );
+        })}
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+        <Button style={btnStyle} variant="contained" onClick={handleAddQuery}>
+          Add Query
+        </Button>
+      </Grid>
+    </div>
+  );
 }
