@@ -6,14 +6,13 @@ export const saveTaskApi = "api/saveTask";
 
 var tasks: Task[] = [];
 
-export async function POST(req: Request) {
+export async function POST(req: NextApiRequest) {
   try {
     const taskToSave = req.body;
     console.log(JSON.stringify(taskToSave));
 
     if (taskToSave != null) {
       console.log(taskToSave);
-      console.log("hello from server");
       let taskExists = false;
       tasks.map((task) => {
         if (task.id == taskToSave.id) {

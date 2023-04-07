@@ -7,7 +7,10 @@ import { Button, Grid, IconButton, Tooltip } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import CustomTextField from "./design/components/CustomTextField";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { saveTaskApi } from "./api/saveTask/route";
+
+export const baseUrl = "https://us-central1-travel-club-666.cloudfunctions.net";
+const saveTaskUrl = `${baseUrl}/saveTask`;
+const deleteTaskUrl = `${baseUrl}/deleteTaskById?id=`;
 
 const deleteStyle = { marginLeft: "-40px" };
 const btnStyle = { height: "40px", minWidht: "120px", margin: "16px" };
@@ -21,7 +24,7 @@ export default function Home() {
       if (task.id == taskId) {
         task.text = newText;
         try {
-          const response = await fetch(saveTaskApi, {
+          const response = await fetch(saveTaskUrl, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -38,12 +41,19 @@ export default function Home() {
   };
 
   const handleDelete = (id: string) => {
-    tasks.map((task) => {
+    tasks.map(async (task) => {
       if (task.id == id) {
         let taskIndex = tasks.indexOf(task);
         tasks.splice(taskIndex, 1);
         console.log(tasks);
         setTasks([...tasks]);
+        try {
+          const response = await fetch(`${deleteTaskUrl}${task.id}`);
+          const data = await response.json();
+          console.log(data);
+        } catch (err) {
+          console.log(err);
+        }
       }
     });
   };
