@@ -1,15 +1,13 @@
 "use client";
 
 import styles from "./page.module.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Task } from "./model/domain/Task";
 import { Button, Grid, IconButton, Tooltip } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
-import CustomTextField from "./design/components/CustomTextField";
+import CustomTextField, { baseUrl } from "./design/components/CustomTextField";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export const baseUrl = "https://us-central1-travel-club-666.cloudfunctions.net";
-const saveTaskUrl = `${baseUrl}/saveTask`;
 const deleteTaskUrl = `${baseUrl}/deleteTaskById?id=`;
 
 const deleteStyle = { marginLeft: "-40px" };
@@ -19,23 +17,11 @@ export default function Home() {
   const handleAddQuery = () => {
     setTasks([...tasks, { id: uuidv4(), text: "", showDelete: false }]);
   };
+
   const onTextChange = (taskId: string, newText: string) => {
     tasks.map(async (task) => {
       if (task.id == taskId) {
         task.text = newText;
-        try {
-          const response = await fetch(saveTaskUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(task),
-          });
-          const data = await response.json();
-          console.log(data);
-        } catch (err) {
-          console.log(err);
-        }
       }
     });
   };
@@ -83,6 +69,7 @@ export default function Home() {
             >
               <CustomTextField
                 text={task.text}
+                taskId={task.id}
                 onTextChange={(newText: string) => {
                   onTextChange(task.id, newText);
                 }}
