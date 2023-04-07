@@ -1,5 +1,5 @@
 export interface TaskDomain {
-  showDelete: boolean;
+  showDelete?: boolean;
   id: string;
   text: string;
 }

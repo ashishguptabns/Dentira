@@ -1,9 +1,7 @@
 "use client";
 import React, { FC, useEffect, useState } from "react";
 import { TextField } from "@mui/material";
-import { baseUrl } from "@/app/utils/constants";
-
-const saveTaskUrl = `${baseUrl}/saveTask`;
+import { saveTask } from "@/app/service/task-service";
 
 interface TypeProps {
   givenText: string;
@@ -19,21 +17,9 @@ const CustomTextField: FC<TypeProps> = ({
 }) => {
   const [text, setText] = useState<string>(givenText);
   useEffect(() => {
-    if (text != null && text.length > 0) {
+    if (text != null && text.length > 0 && text !== givenText) {
       const timer = setTimeout(async () => {
-        try {
-          const response = await fetch(saveTaskUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ id: taskId, text: text }),
-          });
-          const data = await response.json();
-          console.log(data);
-        } catch (err) {
-          console.log(err);
-        }
+        saveTask({ id: taskId, text: text });
       }, 5000);
 
       return () => clearTimeout(timer);
