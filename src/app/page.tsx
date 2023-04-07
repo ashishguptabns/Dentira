@@ -13,7 +13,7 @@ const btnStyle = { height: "40px", minWidht: "120px", margin: "16px" };
 export default function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const handleAddQuery = () => {
-    setTasks([...tasks, { id: uuidv4(), text: "" }]);
+    setTasks([...tasks, { id: uuidv4(), text: "", showDelete: false }]);
   };
   const onTextChange = (taskId: string, newText: string) => {
     tasks.map((task) => {
@@ -23,6 +23,7 @@ export default function Home() {
       }
     });
   };
+
   const handleDelete = (id: string) => {
     tasks.map((task) => {
       if (task.id == id) {
@@ -33,29 +34,50 @@ export default function Home() {
       }
     });
   };
+
+  const showDelete = (show: boolean, id: string) => {
+    tasks.map((task) => {
+      if (task.id == id) {
+        let taskIndex = tasks.indexOf(task);
+        tasks[taskIndex].showDelete = show;
+        console.log(tasks);
+        setTasks([...tasks]);
+      }
+    });
+  };
   return (
     <div className={styles.container}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         {tasks.map((task) => {
           return (
-            <div key={task.id}>
+            <div
+              key={task.id}
+              onMouseEnter={() => {
+                showDelete(true, task.id);
+              }}
+              onMouseLeave={() => {
+                showDelete(false, task.id);
+              }}
+            >
               <CustomTextField
                 text={task.text}
                 onTextChange={(newText: string) => {
                   onTextChange(task.id, newText);
                 }}
               />
-              <Tooltip
-                title="Delete"
-                style={deleteStyle}
-                onClick={() => {
-                  handleDelete(task.id);
-                }}
-              >
-                <IconButton>
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+              {task.showDelete && (
+                <Tooltip
+                  title="Delete"
+                  style={deleteStyle}
+                  onClick={() => {
+                    handleDelete(task.id);
+                  }}
+                >
+                  <IconButton>
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              )}
             </div>
           );
         })}
